@@ -45,6 +45,19 @@ def find_speed(network, neighbor):
     return speed
 
 
+def find_shortest_neighbor(network, source_node):
+    neighbors = network.get(source_node, {})
+    shortest_distance = float('inf')  # 初始化为无穷大的距离
+    shortest_neighbor = None
+
+    for neighbor, distance in neighbors.items():
+        if distance < shortest_distance:
+            shortest_distance = distance
+            shortest_neighbor = neighbor
+
+    return shortest_distance
+
+
 def routing_environmental_dynamics(network, t, v, flighnum, start_time, node_lock_periods):
     """
     The obstacle moves from the lower right corner to the upper left corner
@@ -104,6 +117,7 @@ def main(network, in_angles, out_angles, source, destination, flighnum, pointcoo
     nn = len(network)  # node number
     neighbor = find_neighbor(network)  # the neighbor set
     v = find_speed(network, neighbor)  # the ripple spreading speed
+    # v = 10000
     # print("speed", v)
     t = 0  # simulated time index
     nr = 0  # the current number of ripples - 1
@@ -153,6 +167,13 @@ def main(network, in_angles, out_angles, source, destination, flighnum, pointcoo
         t += 1
         incoming_ripples = {}
 
+        # 对于速度的更新，设置为当前所有涟漪的扩散中心节点的与邻节点最近的节点的最短路径
+        for i in range(nr):
+            if state_set[i] == 2:
+                for epi in epicenter_set:
+                    v_new = find_shortest_neighbor(network, epi)
+                    v = min(v, v_new)# 目前未解决的问题是在于如果涟漪大于现在这个路径长度➕下一个路径长度的时候就会出现很尴尬的情况
+
         # Step 3.3. Update the obstacle based on the given routing environmental dynamics
         # if flighnum == 0:
         new_network, active_node, inactive_node = routing_environmental_dynamics(network, t, v, flighnum,
@@ -166,7 +187,7 @@ def main(network, in_angles, out_angles, source, destination, flighnum, pointcoo
                 state_set[i] = 2
             # if state_set[i] == 1 and path_set[i][-2] in inactive_node:
             #     print('inactive_node activated')
-            #     state_set[i] = 3
+            #     state_set[i] = 3 是否考虑下一个点是不是等待的节点，如果一步直接到达下一个节点，那下一个还是等待吗
 
         for i in range(nr):
             # print("i", i)

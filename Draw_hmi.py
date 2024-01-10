@@ -12,7 +12,7 @@ import datetime
 import helpfunction
 import Draw_path
 """ Default airport and traffic files """
-DATA_PATH = "DATA"
+DATA_PATH = "Datas/DATA"
 APT_FILE = os.path.join(DATA_PATH, "tianjin_new.txt")
 # FPL_FILE = os.path.join(DATA_PATH, "ZBTJ_20210725_Manex_STD.B&B.sim")
 FPL_FILE = os.path.join(DATA_PATH, "ZBTJ_20210725_Manex_16R.B&B.sim")

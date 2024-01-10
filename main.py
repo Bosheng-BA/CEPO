@@ -17,6 +17,7 @@ import Find_Routing
 import gaptraffic
 import json
 import os
+import Cst
 # above imported library
 """ Default airport and traffic files """
 DATA_PATH = "Datas/DATA"
@@ -80,8 +81,7 @@ if __name__ == "__main__":
     the_airport = airport.load(APT_FILE)
     the_airport2 = airport.load2(APT_FILE)
 
-    filename = "/Users/小巴的工作台/BBS_WORK_SPACE/Python_Workspace/Dynamic_Routing/airport/Datas/traffic/gaptraffic-2017" \
-               "-08-03-new.csv"
+    filename = Cst.flight_file_name
     flights = gaptraffic.read_flights(filename)
     node_lock_periods = {}
     activation_times_list = []
@@ -125,18 +125,18 @@ if __name__ == "__main__":
         print('flightnum', flightnum)
         print('path', path)
 
-    # 确保目录存在
-    os.makedirs('saved_figures_gaptraffic-2019-08-07-new', exist_ok=True)
-
-    # 现在我们可以调用这些函数将列表写入到文本文件
-    write_list_to_file(pathlist, 'saved_figures_gaptraffic-2019-08-07-new/pathlist.txt')
-    write_list_to_file(path_coordlist, 'saved_figures_gaptraffic-2019-08-07-new/path_coordlist.txt')
-    write_list_to_file(activation_times_list, 'saved_figures_gaptraffic-2019-08-07-new/activation_times_list.txt')
-
-    # 现在我们可以调用这些函数将列表写入到json文件
-    write_list_to_json(pathlist, 'saved_figures_gaptraffic-2019-08-07-new/pathlist.json')
-    write_list_to_json(path_coordlist, 'saved_figures_gaptraffic-2019-08-07-new/path_coordlist.json')
-    write_list_to_json(activation_times_list, 'saved_figures_gaptraffic-2019-08-07-new/activation_times_list.json')
+    # # 确保目录存在
+    # os.makedirs('saved_figures_gaptraffic-2019-08-07-new', exist_ok=True)
+    #
+    # # 现在我们可以调用这些函数将列表写入到文本文件
+    # write_list_to_file(pathlist, 'saved_figures_gaptraffic-2019-08-07-new/pathlist.txt')
+    # write_list_to_file(path_coordlist, 'saved_figures_gaptraffic-2019-08-07-new/path_coordlist.txt')
+    # write_list_to_file(activation_times_list, 'saved_figures_gaptraffic-2019-08-07-new/activation_times_list.txt')
+    #
+    # # 现在我们可以调用这些函数将列表写入到json文件
+    # write_list_to_json(pathlist, 'saved_figures_gaptraffic-2019-08-07-new/pathlist.json')
+    # write_list_to_json(path_coordlist, 'saved_figures_gaptraffic-2019-08-07-new/path_coordlist.json')
+    # write_list_to_json(activation_times_list, 'saved_figures_gaptraffic-2019-08-07-new/activation_times_list.json')
 
     # Find_Routing_for_test.find_routing(the_airport, the_airport2)
 

@@ -1,8 +1,8 @@
 import gaptraffic
 import airc_type
 
-filename = "/Users/小巴的工作台/BBS_WORK_SPACE/Python_Workspace/Dynamic_Routing/airport/Datas/traffic/gaptraffic-2017-08-03-new.csv"
-flights = gaptraffic.read_flights(filename)
+# filename = "/Users/小巴的工作台/BBS_WORK_SPACE/Python_Workspace/Dynamic_Routing/airport/Datas/traffic/gaptraffic-2017-08-03-new.csv"
+# flights = gaptraffic.read_flights(filename)
 airc_type_dict = airc_type.airc_type_dict
 Heavy = ["RH", "SH", "TH"]
 Middle_and_Light = ["RM", "TM", "TL"]
