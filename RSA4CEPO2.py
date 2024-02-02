@@ -168,11 +168,11 @@ def main(network, in_angles, out_angles, source, destination, flighnum, pointcoo
         incoming_ripples = {}
 
         # 对于速度的更新，设置为当前所有涟漪的扩散中心节点的与邻节点最近的节点的最短路径
-        for i in range(nr):
-            if state_set[i] == 2:
-                for epi in epicenter_set:
-                    v_new = find_shortest_neighbor(network, epi)
-                    v = min(v, v_new)# 目前未解决的问题是在于如果涟漪大于现在这个路径长度➕下一个路径长度的时候就会出现很尴尬的情况
+        # for i in range(nr):
+        #     if state_set[i] == 2:
+        #         for epi in epicenter_set:
+        #             v_new = find_shortest_neighbor(network, epi)
+        #             v = min(v, v_new)# 目前未解决的问题是在于如果涟漪大于现在这个路径长度➕下一个路径长度的时候就会出现很尴尬的情况
 
         # Step 3.3. Update the obstacle based on the given routing environmental dynamics
         # if flighnum == 0:

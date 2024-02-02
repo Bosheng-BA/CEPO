@@ -19,6 +19,7 @@ def initial_network(airport_cepo):
     out_angles = {}
     in_angles_cepo = {}
     out_angles_cepo = {}
+    init_l = {}
     # print("the number of points", len(airport_cepo.points))
     # points, lines, runways = [], [], []
     points = airport_cepo.points
@@ -29,13 +30,13 @@ def initial_network(airport_cepo):
 
     for (i, point) in enumerate(points):
         network[point.xy] = {}
+        # init_l[point.xy] = {}
         in_angles[point.xy] = {}
         out_angles[point.xy] = {}
     for (i, line) in enumerate(lines):
         line_init = init_lines[i]
         length = geo.length(line_init.xys)
         length_cepo = abs(length / line.speed)
-        # print(length)
         # p1 = (float(line_init.xys[0][0]), float(line_init.xys[0][1]))
         p11 = line_init.xys[0]
         p22 = line_init.xys[1]
@@ -45,8 +46,13 @@ def initial_network(airport_cepo):
         # p2 = line.xys[1]
         # p3 = line.xys[-2]
         p4 = line.xys[-1]
+
         # print(p1)
         # print('length', len(points), len())
+        if line.speed != 10:
+            length = -length
+        init_l[(p1, p4)] = length
+        init_l[(p4, p1)] = length
 
         if length == 0.0:
             print('Line = 0', line.oneway, line.taxiway)
@@ -102,7 +108,7 @@ def initial_network(airport_cepo):
     """********* print network **********"""
     # neighbor_info = helpfunction.turn_network(network)
     # helpfunction.print_neighbor_info(neighbor_info, points)
-    return network, pointcoordlist, network_cepo, in_angles, out_angles, in_angles_cepo, out_angles_cepo
+    return network, pointcoordlist, network_cepo, in_angles, out_angles, in_angles_cepo, out_angles_cepo, init_l
 
 
 # def findsource(points):

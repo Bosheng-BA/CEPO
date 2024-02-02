@@ -5,7 +5,7 @@ APT_FILE = os.path.join(DATA_PATH, "tianjin_new.txt")
 
 airc_file_name = "/Users/小巴的工作台/BBS_WORK_SPACE/Python_Workspace/Git-repositories/airport/Datas/traffic/acft_types.txt"
 
-flight_file_name = "/Users/小巴的工作台/BBS_WORK_SPACE/Python_Workspace/Git-repositories/airport/Datas/traffic/gaptraffic-2017-08-03-new.csv"
+flight_file_name = "/Users/小巴的工作台/BBS_WORK_SPACE/Python_Workspace/Git-repositories/airport/Datas/traffic/gaptraffic-2017-08-06-new.csv"
 
 # 存储文件的位置
 

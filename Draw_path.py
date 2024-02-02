@@ -58,7 +58,7 @@ def create_bokeh_animation(network_point, pointcoordlist):
 
 def create_matplotlib_figure(network_point, pointcoordlist, path, stand, runway,flightnum):
     # 创建保存图像的文件夹
-    save_dir = 'saved_figures_gaptraffic-2019-08-07-new'
+    save_dir = 'saved_figures_2024-1-26'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
@@ -102,6 +102,51 @@ def create_matplotlib_figure(network_point, pointcoordlist, path, stand, runway,
 # network = {(0, 0): {(100, 0):100, (0, 100):100}, (100, 0): {(200, 0):200}, (0, 100): {(0, 200):100}}
 # pointcoordlist = [(0, 0), (100, 0), (200, 0), (0, 100), (0, 200)]
 # create_matplotlib_figure(network, pointcoordlist)
+
+
+#  给多个飞机的路径绘制在一个图中
+def create_matplotlib_figure_for_mutiaircraft(graph, pointcoordlist, path_list, stand, runway, flightnum):
+    save_dir = 'saved_figures_2024-1-26'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    fig, ax = plt.subplots(figsize=(18, 12))
+
+    # 绘制图中的线路
+    # for node, connections in graph.items():
+    #     for connection in connections:
+    #         point1 = node
+    #         point2 = connection[-1]
+    #         ax.plot([point1[0], point2[0]], [point1[1], point2[1]], color='gray')
+    for point, connections in graph.items():
+        for connected_point, _ in connections.items():
+            ax.plot([point[0], connected_point[0]], [point[1], connected_point[1]], color='gray')
+
+    # 绘制图中的节点
+    # for node in graph.keys():
+    #     ax.scatter(node[0], node[1], color='darkgray')
+
+    # 为每条路径选择不同的颜色
+    colors = ['blue', 'green', 'red', 'purple', 'orange', 'brown', 'pink']
+
+    # 绘制每条路径
+    for i, path in enumerate(path_list):
+        path_x = [path[i][0] for i in range(len(path))]
+        path_y = [path[i][1] for i in range(len(path))]
+        ax.plot(path_x, path_y, color=colors[i % len(colors)], linewidth=2.5, label=f"Path {i+1}")  # 增加线宽
+
+        # 绘制起点（绿色）和终点（红色）
+        ax.scatter(path[0][0], path[0][1], color='green')  # 起点
+        ax.scatter(path[-1][0], path[-1][1], color='red')  # 终点
+
+    # 设置图例和标题
+    plt.legend()
+    plt.title("Matplotlib Paths Visualization")
+
+    # 保存图像
+    filename = "多飞机路径可视化"
+    save_path = os.path.join(save_dir, filename)
+    plt.savefig(save_path)
 
 
 # 圆形障碍物情况
