@@ -12,8 +12,6 @@ import datetime
 import helpfunction
 import Draw_path
 import Sour_and_Des
-import Find_Routing_for_test
-import Find_Routing
 import gaptraffic
 import json
 import os
@@ -38,13 +36,6 @@ def write_list_to_file(list_name, filename):
     with open(filename, 'w') as f:
         for item in list_name:
             f.write("%s\n" % item)
-
-
-def show_point_coor(point, points):
-    for p in points:
-        if p.name == point:
-            point_xy = p.xy
-            return point_xy
 
 
 def get_node_lock_periods(pathlist, activation_times_list, network_cepo, flight, node_lock_periods):
@@ -83,6 +74,26 @@ def get_node_lock_periods(pathlist, activation_times_list, network_cepo, flight,
 
     return node_lock_periods
 
+
+def find_routing(the_airport, the_airport2, sour, des, flight, flightnum, network, pointcoordlist, network_cepo,
+             in_angles, out_angles, in_angles_cepo, out_angles_cepo, node_lock_periods, start_time):
+
+    s = pointcoordlist.index(sour)
+    d = pointcoordlist.index(des)
+
+    """CEPO 寻路过程"""
+    path_set, length_set, plist, t, v, path_activation_times = \
+        RSA4CEPO2.main(network_cepo, in_angles_cepo, out_angles_cepo, s, d, flightnum, pointcoordlist,
+                       the_airport2, network, start_time, node_lock_periods, the_airport2.points)
+
+    # Draw_path.create_matplotlib_figure(network_point=network, pointcoordlist=pointcoordlist, path=plist, stand=s,
+    #                                    runway=d, flightnum=flightnum)
+    # print(path_activation_times[-1])
+    cost = path_activation_times[-1]
+
+    return path_set, plist, path_activation_times, cost
+
+
 if __name__ == "__main__":
     fpl_file = sys.argv[1] if 1 < len(sys.argv) else FPL_FILE
     # Load the airport and the traffic
@@ -101,17 +112,14 @@ if __name__ == "__main__":
     network, pointcoordlist, network_cepo, in_angles, out_angles, in_angles_cepo, out_angles_cepo, init_l \
         = Initial_network.initial_network(the_airport2)
 
+    costs = []
+    Total_COST = 0
     init_Tcost = 0
     turn_times = 0
     Tcost_without_waiting = 0
     Lenth = 0
-
-    # list = [2, 27, 30, 44, 48, 495]
-    # Standlist = ['911', '411', '108', '205', '417', '879']
-    # Runwaylist = ['A1', '16R-34L', 'W3', '16L-34R', 'B6', '16R-34L']
-
-    for flightnum in tqdm(range(len(flights)), ncols=100):
-    # for flightnum in tqdm(range(len(list)), ncols=100):
+    for flightnum in tqdm(range(len(flights)), ncols= 100):
+    # for flightnum in range(0, 1):
         flight = flights[flightnum]
         # 多飞机规划路径：
         # 初始化开始时间
@@ -123,44 +131,23 @@ if __name__ == "__main__":
             start_time = flight.aldt
 
         sour, des = Sour_and_Des.find_the_sour_des(stands=stand_dict, pists=runway_dict, flight=flight)
-        # sour = show_point_coor(Standlist[flightnum], points=the_airport2.points)
-        # des = show_point_coor(Runwaylist[flightnum], points=the_airport2.points)
 
-        points = the_airport2.points
-        pushback_points = helpfunction.find_pushback_points(points, pointcoordlist)
         # using the general example to test
         # source_flight = [155, 86]
         # des_flight = [170, 164]
         # sour = source_flight[flightnum]
         # des = des_flight[flightnum]
-        # check = 0
-        # if len(network_cepo[sour]) > 1:  # Only one pushback do not think about this
-        #     for edge in graph[source]:
-        #         if edge not in pushback_edges:  # Ensure the boolean value
-        #             continue
-        #         if edge in pushback_edges:
-        #             check += 1
 
-        # path, path_coord, path_activation_times = Find_Routing.find_routing\
-        #     (the_airport, the_airport2, sour, des, flight, flightnum, network, pointcoordlist, network_cepo,
-        #      in_angles, out_angles, in_angles_cepo, out_angles_cepo, node_lock_periods)
-
-        s = pointcoordlist.index(sour)
-        d = pointcoordlist.index(des)
-
-        """CEPO 寻路过程"""
-        path_set, length_set, plist, t, v, path_activation_times = \
-            RSA4CEPO2.main(network_cepo, in_angles_cepo, out_angles_cepo, s, d, flightnum, pointcoordlist,
-                           the_airport2, network, start_time, node_lock_periods, the_airport2.points)
-
-        path = path_set
-        path_coord = plist
+        path, path_coord, path_activation_times, cost = find_routing(the_airport, the_airport2, sour, des, flight, flightnum, network, pointcoordlist, network_cepo, in_angles, out_angles, in_angles_cepo, out_angles_cepo, node_lock_periods, start_time)
 
         activation_times_list.append(path_activation_times)
         pathlist.append(path)
         path_coordlist.append(path_coord)
 
         get_node_lock_periods(pathlist, activation_times_list, network_cepo, flight, node_lock_periods)
+
+        costs.append(cost)
+        Total_COST = Total_COST +cost
 
         lenth = 0
         time_lenth = 0
@@ -180,19 +167,23 @@ if __name__ == "__main__":
         Lenth = Lenth + lenth
         Tcost_without_waiting = Tcost_without_waiting + time_lenth
 
-        print('flightnum', flightnum)
-        # print('path', path)
-        print('path', plist)
+        # print('flightnum', flightnum,'path', path)
+        print('flightnum', flightnum, "Cost:", cost)
+        print('path', path_coord)
         print(lenth, time_lenth, turn_time)
 
+    costs.append(Total_COST)
+    costs.append(Lenth)
+    costs.append(Tcost_without_waiting)
+    costs.append(turn_times)
+    print('Total cost', Total_COST)
     print("Lenth:", Lenth, "Tcost_without_waiting:", Tcost_without_waiting, "Total_turn_times ", turn_times)
-
-    # Draw_path.create_matplotlib_figure_for_mutiaircraft(network, pathlist, path_coordlist, s, d, flightnum)
-
     # # 确保目录存在
-    # os.makedirs('saved_figures_gaptraffic-2019-08-07-new', exist_ok=True)
-    #
-    # # 现在我们可以调用这些函数将列表写入到文本文件
+    # file = Cst.file
+    # os.makedirs(file, exist_ok=True)
+    write_list_to_file(costs, Cst.file0 + 'Cost' + '.txt')
+
+    # 现在我们可以调用这些函数将列表写入到文本文件
     # write_list_to_file(pathlist, 'saved_figures_gaptraffic-2019-08-07-new/pathlist.txt')
     # write_list_to_file(path_coordlist, 'saved_figures_gaptraffic-2019-08-07-new/path_coordlist.txt')
     # write_list_to_file(activation_times_list, 'saved_figures_gaptraffic-2019-08-07-new/activation_times_list.txt')
@@ -202,6 +193,6 @@ if __name__ == "__main__":
     # write_list_to_json(path_coordlist, 'saved_figures_gaptraffic-2019-08-07-new/path_coordlist.json')
     # write_list_to_json(activation_times_list, 'saved_figures_gaptraffic-2019-08-07-new/activation_times_list.json')
 
-    # Find_Routing_for_test.find_routing(the_airport, the_airport2)
+    # Find_Routing_for_test.find_routing(the_airport, t he_airport2)
 
 
