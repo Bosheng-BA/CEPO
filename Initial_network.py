@@ -43,19 +43,30 @@ def initial_network(airport_cepo):
         p33 = line_init.xys[-2]
         p44 = line_init.xys[-1]
         p1 = line.xys[0]
-        # p2 = line.xys[1]
-        # p3 = line.xys[-2]
         p4 = line.xys[-1]
 
-        # print(p1)
-        # print('length', len(points), len())
+        """删掉了最小的0.1边缘值，加速搜索两倍"""
+        # if length_cepo <= 0.25:
+        #     print(length_cepo)
+
+        if length_cepo == 0.1:
+            print('Line = 0。1', line.oneway, line.taxiway, line.xys, length)
+            continue
+
+        if p1 == (22622, 7891):
+            p1 = (22622, 7892)
+            # xylist = []
+            # xylist.append((22622, 7892))
+            # xylist = line_init.xys
+            length = length + 1
+        elif p4 == (22622, 7891):
+            p4 = (22239, 7602)
+            length = length + 1
+
         if line.speed != 10:
             length = -length
         init_l[(p1, p4)] = length
         init_l[(p4, p1)] = length
-
-        if length == 0.0:
-            print('Line = 0', line.oneway, line.taxiway)
 
         while length != 0.0:  # ignore the line with length '0'
             network[p1][p4] = length_cepo

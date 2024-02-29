@@ -31,7 +31,7 @@ def read_flights(files_name):
 
     # 对DataFrame进行排序
     df_sorted = df.sort_values(by='start_taxi_time')
-    df_sorted.to_csv("sorted_file11.csv", index=False)
+    df_sorted.to_csv(files_name + "sorted_file.csv", index=False)
 
     for index, row in df_sorted.iterrows():
         flight = Flight(row['data'], row['callsign'], row['departure'], row['arrivee'], row['TTOT'], row['TLDT'],

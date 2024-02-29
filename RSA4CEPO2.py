@@ -101,7 +101,7 @@ def routing_environmental_dynamics(network, t, v, flighnum, start_time, node_loc
 
 
 def main(network, in_angles, out_angles, source, destination, flighnum, pointcoordlist, theairport,
-         network_point, start_time, node_lock_periods, points):
+         network_point, start_time, node_lock_periods, points, pushback_points):
     """
     The main function of the RSA4CEPO
     :param network: {node1: {node2: length, node3: length, ...}, ...}
@@ -129,7 +129,6 @@ def main(network, in_angles, out_angles, source, destination, flighnum, pointcoo
     activation_times = {}
     # state set, state_set[i] = 1, 2, 3 means ripple i is waiting, active, or dead
     omega = {}  # the set that records the ripple generated at each node
-    pushback_points = helpfunction.find_pushback_points(points, pointcoordlist)
 
     for node in range(nn):
         omega[node] = -1
@@ -146,8 +145,6 @@ def main(network, in_angles, out_angles, source, destination, flighnum, pointcoo
     k = 0
 
     # Step 3. The main loop
-    # print("des", destination)
-
     while omega[destination] == -1:
         # print(path_set)
         # print(omega[destination], "Iteration:", k)
